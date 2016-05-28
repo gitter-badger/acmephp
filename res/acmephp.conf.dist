@@ -1,0 +1,106 @@
+#
+# acmephp.conf - Configuration file for Acme PHP client.
+#
+# See https://github.com/acmephp/acmephp for more informations
+#
+
+###################################################################
+# Storage
+#
+# Configure here where and how you want to save your certificates
+# and SSL keys.
+#
+
+storage:
+
+    #
+    # By default, Acme PHP will create a backup of every file
+    # before any modification. You can disable this mechanism here.
+    #
+    enable_backup: true   # false to disable
+
+
+    #
+    # Formatters create useful certificate files structures for various
+    # use-cases. For instance, there is a formatter for the nginx-proxy
+    # Docker image (https://github.com/jwilder/nginx-proxy) creating a
+    # directory containting your certificates to be used with the image.
+    #
+    # By default, only the Acme PHP DefaultFormatter is used.
+    #
+    # formatters:
+    #     - nginxproxy
+
+
+    #
+    # Acme PHP requires a master storage that should be accessible and
+    # stable over time. Usually, it's a good idea to keep it in local
+    # (if you need to push your certificates over the network, configure
+    # a slave to do so).
+    #
+    # The default configuration uses the ~/.acmephp directory.
+    #
+    master:
+        type: local
+        root: ~/.acmephp/ssl
+
+
+    #
+    # In addition of the master storage, you can configure slaves
+    # to duplicate your files over the network.
+    #
+    # A classical use-case is when you want to generate the certificates
+    # on your application server but you want to use the certificates
+    # on the load balancer server. You can configure a slave to push the
+    # certificates on the load balancer at each renewal.
+    #
+    # You can configure as much slaves as you want but keep in mind
+    # that the certificates and SSL keys will be written in each one of
+    # them (the slaves should be accessible when you use Acme PHP).
+    #
+    # See https://acmephp.github.io/acmephp/ for more informations.
+    #
+    # slaves:
+    #     - type: ftp
+    #       root: /acmephp
+    #       host: ftp.example.com
+    #       username: username
+    #       password: password
+    #       # port: 21
+    #       # passive: true
+    #       # ssl: true
+    #       # timeout: 30
+    #     - type: sftp
+    #       root: /acmephp
+    #       host: sftp.example.com
+    #       username: username
+    #       password: password
+    #       # port: 21
+    #       # private_key: path/to/or/contents/of/privatekey
+    #       # timeout: 30
+
+
+
+###################################################################
+# Monitoring
+#
+# This section let you configure a simple monitoring service that
+# will warn you if an error occurs during a CRON job.
+#
+
+monitoring: ~   # Monitoring is disabled by default
+
+# You can enabled it by configuring at least one alert handler:
+#monitoring:
+#    email:   # Only SMTP(S) support for now
+#        to: galopintitouan@gmail.com
+#        host: smtp.example.com
+#        # port: 25
+#        # username: ~
+#        # password: ~
+#        # encryption: ~
+#
+#    slack:
+#        token: your_token
+#        channel: general
+#        # username: ACMEPHP

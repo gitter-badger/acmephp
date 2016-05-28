@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+
+        <!-- Ssl -->
+        <service id="key_pair_generator" class="AcmePhp\Ssl\Generator\KeyPairGenerator" />
+        <service id="key_parser" class="AcmePhp\Ssl\Parser\KeyParser" />
+        <service id="csr_signer" class="AcmePhp\Ssl\Signer\CertificateRequestSigner" />
+        <service id="data_signer" class="AcmePhp\Ssl\Signer\DataSigner" />
+
+        <!-- Persistence -->
+        <service id="storage_factory" class="AcmePhp\Cli\Storage\StorageFactory" public="false">
+            <argument>%storage.master%</argument>
+            <argument>%storage.slaves%</argument>
+            <argument>%storage.formatters%</argument>
+            <argument>%storage.enable_backup%</argument>
+        </service>
+
+        <service id="storage" class="AcmePhp\Persistence\Storage">
+            <factory service="storage_factory" method="createStorage" />
+        </service>
+
+        <!-- Core -->
+        <service id="raw_http_client" class="GuzzleHttp\Client" public="false" />
+        <service id="base64_encoder" class="AcmePhp\Core\Http\Base64SafeEncoder" public="false" />
+        <service id="server_error_handler" class="AcmePhp\Core\Http\ServerErrorHandler" public="false" />
+
+        <service id="http_client" class="AcmePhp\Core\Http\SecureHttpClient" public="false">
+            <argument type="service" id="account_key_pair" />
+            <argument type="service" id="raw_http_client" />
+            <argument type="service" id="base64_encoder" />
+            <argument type="service" id="key_parser" />
+            <argument type="service" id="data_signer" />
+            <argument type="service" id="server_error_handler" />
+        </service>
+
+        <service id="client" class="AcmePhp\Core\AcmeClient">
+            <argument type="service" id="http_client" />
+            <argument>%application.server%</argument>
+            <argument type="service" id="data_signer" />
+        </service>
+
+    </services>
+</container>
